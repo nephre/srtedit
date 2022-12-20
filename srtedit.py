@@ -34,6 +34,11 @@ def main(args):
     pat_str = r'(?P<start_time>[\d]{2}:[\d]{2}:[\d]{2},[\d]{3}) --> (?P<end_time>[\d]{2}:[\d]{2}:[\d]{2},[\d]{3})'
     pattern = re.compile(pat_str)
 
+    if args.minimum:
+        delta = datetime.timedelta(seconds=args.minimum)
+    else:
+        delta = datetime.timedelta(seconds=args.interval)
+
     for line in data:
         result = pattern.search(line)
 
@@ -46,13 +51,11 @@ def main(args):
 
             if args.minimum:
                 diff = ts_end - ts_start
-                delta = datetime.timedelta(seconds=args.minimum)
                 if diff < delta:
                     new_end = ts_start + delta
                 else:
                     new_end = ts_end
             else:
-                delta = datetime.timedelta(seconds=args.interval)
                 new_end = ts_end + delta
 
             new_end_time = new_end.strftime('%H:%M:%S,%f')[0:-3]
